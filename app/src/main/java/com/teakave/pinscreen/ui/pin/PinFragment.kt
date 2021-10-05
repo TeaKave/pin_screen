@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.teakave.pinscreen.R
 import com.teakave.pinscreen.databinding.PinFragmentBinding
-import com.teakave.pinscreen.ui.main.Constants
 import kotlinx.coroutines.flow.collect
 
 class PinFragment : Fragment(R.layout.pin_fragment) {
@@ -51,13 +49,6 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
         setupRemovePinListener()
     }
 
-    private fun getAllPinViews() = listOf(
-        binding?.viewPinFirst,
-        binding?.viewPinSecond,
-        binding?.viewPinThird,
-        binding?.viewPinFourth
-    )
-
     private fun getAllNumberViews() = listOf(
         binding?.textOne,
         binding?.textTwo,
@@ -68,6 +59,13 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
         binding?.textSeven,
         binding?.textEight,
         binding?.textNine
+    )
+
+    private fun getAllPinViews() = listOf(
+        binding?.viewPinFirst,
+        binding?.viewPinSecond,
+        binding?.viewPinThird,
+        binding?.viewPinFourth
     )
 
     private fun getAllPinTextViews() = listOf(
@@ -93,24 +91,34 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
                         hideError()
                         updatePinViews(uiState.pin, uiState.showPin)
                     }
-                    is PinUiState.RemovedPin -> resetPinView(uiState.pinLength)
+                    is PinUiState.RemovedPin -> resetPinView(uiState.pin, uiState.showPin)
                     is PinUiState.Loading -> {
                         updatePinViews(uiState.pin, uiState.showPin)
                         disableInputs()
                     }
                     is PinUiState.LoginSuccess -> {
                         onSuccess()
+                        changePinVisibleButton(uiState.showPin)
                         resetAllPinViews()
                         enableInputs()
                     }
                     is PinUiState.LoginError -> {
                         showError()
+                        changePinVisibleButton(uiState.showPin)
                         resetAllPinViews()
                         enableInputs()
                     }
                     else -> Unit
                 }
             }
+        }
+    }
+
+    private fun changePinVisibleButton(showPin: Boolean) {
+        if (showPin) {
+            showPinVisibleButton()
+        } else {
+            showPinHiddenButton()
         }
     }
 
@@ -134,9 +142,10 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
             viewModel.removePinClicked()
         }
 
-    private fun resetPinView(pinLength: Int) {
-        getAllPinTextViews().getOrNull(pinLength)?.text = ""
-        getAllPinViews().getOrNull(pinLength)?.setBackgroundResource(R.drawable.pin_empty)
+    private fun resetPinView(pin: String, showPin: Boolean) {
+        getAllPinTextViews().getOrNull(pin.length)?.text = ""
+        getAllPinViews().getOrNull(pin.length)?.setBackgroundResource(R.drawable.pin_empty)
+        updatePinViews(pin, showPin)
     }
 
     private fun showPinVisibleButton() =

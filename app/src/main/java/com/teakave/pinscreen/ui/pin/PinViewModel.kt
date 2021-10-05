@@ -18,7 +18,7 @@ class PinViewModel : ViewModel() {
 
     fun removePinClicked() {
         pinInput = pinInput.dropLast(1)
-        updateUiState(PinUiState.RemovedPin(pinInput.length))
+        updateUiState(PinUiState.RemovedPin(pinInput, showPin))
     }
 
     fun showPinClicked() {
@@ -48,10 +48,10 @@ class PinViewModel : ViewModel() {
         viewModelScope.launch {
             if (isPinValid()) {
                 pinInput = ""
-                updateUiState(PinUiState.LoginSuccess)
+                updateUiState(PinUiState.LoginSuccess(showPin))
             } else {
                 pinInput = ""
-                updateUiState(PinUiState.LoginError)
+                updateUiState(PinUiState.LoginError(showPin))
             }
         }
     }
