@@ -50,6 +50,7 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
     }
 
     private fun getAllNumberViews() = listOf(
+        binding?.textZero,
         binding?.textOne,
         binding?.textTwo,
         binding?.textThree,

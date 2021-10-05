@@ -32,7 +32,7 @@ class PinViewModel : ViewModel() {
         )
     }
 
-    fun numberClicked(number: Int?) {
+    fun numberClicked(number: Int?) =
         number?.let {
             pinInput += it
             if (pinInput.length == Constants.PIN_LENGTH) {
@@ -42,9 +42,8 @@ class PinViewModel : ViewModel() {
                 updateUiState(PinUiState.AddedPin(pinInput, showPin))
             }
         }
-    }
 
-    private fun validatePin() {
+    private fun validatePin() =
         viewModelScope.launch {
             if (isPinValid()) {
                 pinInput = ""
@@ -54,7 +53,6 @@ class PinViewModel : ViewModel() {
                 updateUiState(PinUiState.LoginError(showPin))
             }
         }
-    }
 
     private suspend fun isPinValid(): Boolean {
         // todo: implement isPinValid() functionality
@@ -62,10 +60,9 @@ class PinViewModel : ViewModel() {
         return pinInput == "1234"
     }
 
-    private fun updateUiState(uiState: PinUiState) {
+    private fun updateUiState(uiState: PinUiState) =
         viewModelScope.launch {
             _loginUiState.emit(uiState)
         }
-    }
 
 }
