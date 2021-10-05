@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="visibility_size">32dp</dimen>
+    <dimen name="pin_size">40dp</dimen>
+    <dimen name="pin_margin_small">10dp</dimen>
+    <dimen name="pin_margin_large">20dp</dimen>
+
+</resources>
