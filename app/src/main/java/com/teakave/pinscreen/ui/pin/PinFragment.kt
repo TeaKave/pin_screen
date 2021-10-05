@@ -182,12 +182,18 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
         }
     }
 
-    private fun disableInputs() = getAllNumberViews().forEach {
-        it?.isEnabled = false
+    private fun disableInputs() {
+        getAllNumberViews().forEach {
+            it?.isEnabled = false
+        }
+        binding?.imageRemovePin?.isEnabled = false
     }
 
-    private fun enableInputs() = getAllNumberViews().forEach {
-        it?.isEnabled = true
+    private fun enableInputs() {
+        getAllNumberViews().forEach {
+            it?.isEnabled = true
+        }
+        binding?.imageRemovePin?.isEnabled = true
     }
 
     private fun hideError() {
