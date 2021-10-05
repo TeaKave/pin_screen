@@ -81,8 +81,14 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
         lifecycleScope.launchWhenCreated {
             viewModel.loginUiState.collect { uiState ->
                 when (uiState) {
-                    is PinUiState.ShowPin -> showPin(uiState.pin)
-                    is PinUiState.HidePin -> hidePin(uiState.pin)
+                    is PinUiState.ShowPin -> {
+                        showPinVisibleButton()
+                        updatePinViews(uiState.pin, true)
+                    }
+                    is PinUiState.HidePin -> {
+                        showPinHiddenButton()
+                        updatePinViews(uiState.pin, false)
+                    }
                     is PinUiState.AddedPin -> {
                         hideError()
                         updatePinViews(uiState.pin, uiState.showPin)
@@ -133,23 +139,11 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
         getAllPinViews().getOrNull(pinLength)?.setBackgroundResource(R.drawable.pin_empty)
     }
 
-    private fun showPin(pin: String) = binding?.run {
+    private fun showPinVisibleButton() =
         binding?.viewShowPin?.setBackgroundResource(R.drawable.ic_visibility_on)
-        updateViewVisibility(true, textPinFirst, textPinSecond, textPinThird, textPinFourth)
-        if (pin.isNotEmpty()) {
-            updatePinViewImage(R.drawable.pin_filled_visible, getFilledPinViews(pin.length))
-            updatePinViewImage(R.drawable.pin_empty, getEmptyPinViews(pin.length))
-        }
-    }
 
-    private fun hidePin(pin: String) = binding?.run {
+    private fun showPinHiddenButton() =
         binding?.viewShowPin?.setBackgroundResource(R.drawable.ic_visibility_off)
-        updateViewVisibility(false, textPinFirst, textPinSecond, textPinThird, textPinFourth)
-        if (pin.isNotEmpty()) {
-            updatePinViewImage(R.drawable.pin_filled_hidden, getFilledPinViews(pin.length))
-            updatePinViewImage(R.drawable.pin_empty, getEmptyPinViews(pin.length))
-        }
-    }
 
     private fun resetAllPinViews() {
         getAllPinTextViews().forEach {
@@ -161,14 +155,21 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
     }
 
     private fun updatePinViews(pin: String, showPin: Boolean) {
-        getAllPinTextViews().getOrNull(pin.length - 1)?.text = pin.last().toString()
-        getAllPinViews().getOrNull(pin.length - 1)?.setBackgroundResource(
-            if (showPin) {
-                R.drawable.pin_filled_visible
-            } else {
-                R.drawable.pin_filled_hidden
+        for (index in pin.indices) {
+            pin.getOrNull(index)?.let { pinOnIndex ->
+                getAllPinTextViews().getOrNull(index)?.run {
+                    text = pinOnIndex.toString()
+                    isVisible = showPin
+                }
             }
-        )
+            getAllPinViews().getOrNull(index)?.setBackgroundResource(
+                if (showPin) {
+                    R.drawable.pin_filled_visible
+                } else {
+                    R.drawable.pin_filled_hidden
+                }
+            )
+        }
     }
 
     private fun disableInputs() = getAllNumberViews().forEach {
@@ -185,20 +186,6 @@ class PinFragment : Fragment(R.layout.pin_fragment) {
 
     private fun showError() {
         binding?.textError?.isVisible = true
-    }
-
-    private fun getFilledPinViews(pinLength: Int): List<View?> =
-        getAllPinViews().subList(0, pinLength)
-
-    private fun getEmptyPinViews(pinLength: Int): List<View?> =
-        getAllPinViews().subList(pinLength, Constants.PIN_LENGTH)
-
-    private fun updateViewVisibility(isVisible: Boolean, vararg view: View?) = view.forEach {
-        it?.isVisible = isVisible
-    }
-
-    private fun updatePinViewImage(@DrawableRes resId: Int, view: List<View?>) = view.forEach {
-        it?.setBackgroundResource(resId)
     }
 
     private fun onSuccess() {
